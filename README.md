@@ -12,6 +12,6 @@ Keen Keeper is a modern and intuitive personal finance web application that help
 - React Toastify
 
 ## Features
-1.Interactive Dashboard with visual charts
+1.Interactive Dashboard with visual char
 2.Easy Income and Expense Tracking
 3.Beautiful and Responsive UI
