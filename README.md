@@ -1,8 +1,9 @@
-# Keen Keeper
+# My Project Name- B13-A07 Keen Keeper
 
+## Description:
 Keen Keeper is a modern and intuitive personal finance web application that helps users easily track their income, expenses, and manage their financial health with beautiful visualizations.
 
-### Technologies Used
+## Technologies Used
 - React 19
 - Tailwind CSS
 - Vite
@@ -10,7 +11,7 @@ Keen Keeper is a modern and intuitive personal finance web application that help
 - React Router DOM
 - React Toastify
 
-### Key Features
-- Interactive Dashboard with visual charts
-- Easy Income and Expense Tracking
-- Beautiful and Responsive UI
+## Features
+1.Interactive Dashboard with visual charts
+2.Easy Income and Expense Tracking
+3.Beautiful and Responsive UI
