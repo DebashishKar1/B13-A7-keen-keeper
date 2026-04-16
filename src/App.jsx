@@ -409,7 +409,7 @@ const Footer = () => (
   </footer>
 );
 
-// ====================== STATS PAGE (Friendship Analytics) ======================
+
 
 // ====================== STATS / FRIENDSHIP ANALYTICS PAGE ======================
 const StatsPage = ({ timeline }) => {
@@ -533,8 +533,8 @@ function App() {
         <Route path="*" element={<NotFound />} />
         </Routes>
 
-     {/* Footer শুধুমাত্র 404 ছাড়া অন্য সব পেজে দেখাবে */}
-               {/* ✅ ToastContainer এখানে রাখো - সবার শেষে */}
+     {/* Show the footer on all pages except the 404 page. */}
+               {/*  ToastContainer  */}
         <ToastContainer 
           position="top-right"
           autoClose={2500}
@@ -545,7 +545,7 @@ function App() {
           pauseOnFocusLoss
           draggable
           pauseOnHover
-          theme="light"
+          theme="light
         />
 
 
