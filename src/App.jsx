@@ -1,3 +1,4 @@
+
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useParams } from 'react-router-dom';
@@ -111,72 +112,184 @@ const FriendsSection = ({ friends, loading }) => {
 };
 
 // ====================== FRIEND DETAIL PAGE ======================
+
 const FriendDetail = ({ timeline, setTimeline }) => {
   const { id } = useParams();
   const friend = friendsData.find(f => f.id === parseInt(id));
-  if (!friend) return <div className="p-10 text-center">Friend not found</div>;
+
+  if (!friend) return <div className="p-10 text-center text-xl">Friend not found</div>;
 
   const getStatusStyle = (status) => {
     if (status === 'overdue') return { label: 'Overdue', color: 'bg-red-500' };
     if (status === 'almost due') return { label: 'Almost Due', color: 'bg-amber-500' };
     return { label: 'On-Track', color: 'bg-emerald-700' };
   };
+
   const status = getStatusStyle(friend.status);
 
+  // Updated addToTimeline function as per requirement
   const addToTimeline = (type) => {
     const newEntry = {
       id: Date.now(),
       type,
       name: friend.name,
-      date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+      date: new Date().toLocaleDateString('en-US', { 
+        month: 'long', 
+        day: 'numeric', 
+        year: 'numeric' 
+      }),
     };
+
+    // Add to timeline
     setTimeline(prev => [newEntry, ...prev]);
-    toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} with ${friend.name} added to Timeline!`);
+
+    // Show success toast with proper message
+    const action = type.charAt(0).toUpperCase() + type.slice(1);
+    toast.success(`✅ ${action} with ${friend.name} added to Timeline`, {
+      position: "top-right",
+      autoClose: 2500,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+    });
+  };
+
+  // Action button handlers
+  const handleSnooze = () => {
+    toast.success(`⏰ ${friend.name} has been snoozed for 2 weeks`, {
+      autoClose: 2500,
+    });
+  };
+
+  const handleArchive = () => {
+    toast.info(`📦 ${friend.name} has been archived`, {
+      autoClose: 2500,
+    });
+  };
+
+  const handleDelete = () => {
+    toast.error(`🗑️ ${friend.name} has been deleted`, {
+      autoClose: 3000,
+      theme: "colored",
+    });
   };
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10 bg-gray-100 min-h-screen">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        {/* Left Side - Profile Information */}
         <div className="bg-white rounded-3xl shadow p-8">
           <div className="flex flex-col items-center text-center">
-            <img src={friend.picture} alt={friend.name} className="w-40 h-40 rounded-2xl object-cover mb-6 shadow" />
+            <img 
+              src={friend.picture} 
+              alt={friend.name} 
+              className="w-40 h-40 rounded-2xl object-cover mb-6 shadow" 
+            />
             <h1 className="text-3xl font-bold text-gray-900">{friend.name}</h1>
-            <div className={`inline-block px-6 py-1 rounded-3xl text-white text-sm font-medium mt-3 ${status.color}`}>{status.label}</div>
-            <div className="flex gap-2 mt-4">
-              {friend.tags.map((tag, i) => <span key={i} className="bg-emerald-100 text-emerald-700 text-xs font-medium px-5 py-2 rounded-3xl">{tag}</span>)}
+            <div className={`inline-block px-6 py-1 rounded-3xl text-white text-sm font-medium mt-3 ${status.color}`}>
+              {status.label}
+            </div>
+            <div className="flex flex-wrap gap-2 justify-center mt-4">
+              {friend.tags.map((tag, i) => (
+                <span key={i} className="bg-emerald-100 text-emerald-700 text-xs font-medium px-4 py-1.5 rounded-3xl">
+                  {tag}
+                </span>
+              ))}
             </div>
             <p className="mt-8 italic text-gray-500">"{friend.bio}"</p>
             <p className="mt-6 text-sm text-gray-400">Preferred: email</p>
             <p className="text-gray-600 font-medium">{friend.email}</p>
           </div>
 
+          {/* Action Buttons */}
           <div className="mt-12 space-y-3">
-            <button onClick={() => toast.success('Snoozed for 2 weeks')} className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 hover:border-gray-300 py-4 rounded-2xl text-gray-700 font-medium">⏰ Snooze 2 Weeks</button>
-            <button onClick={() => toast.success('Archived')} className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 hover:border-gray-300 py-4 rounded-2xl text-gray-700 font-medium">📦 Archive</button>
-            <button onClick={() => toast.success('Deleted')} className="w-full flex items-center justify-center gap-3 bg-white border border-red-200 hover:border-red-300 py-4 rounded-2xl text-red-600 font-medium">🗑️ Delete</button>
+            <button 
+              onClick={handleSnooze}
+              className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 hover:border-gray-300 py-4 rounded-2xl text-gray-700 font-medium transition-all hover:shadow-sm"
+            >
+              ⏰ Snooze 2 Weeks
+            </button>
+
+            <button 
+              onClick={handleArchive}
+              className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 hover:border-gray-300 py-4 rounded-2xl text-gray-700 font-medium transition-all hover:shadow-sm"
+            >
+              📦 Archive
+            </button>
+
+            <button 
+              onClick={handleDelete}
+              className="w-full flex items-center justify-center gap-3 bg-white border border-red-200 hover:border-red-300 py-4 rounded-2xl text-red-600 font-medium transition-all hover:shadow-sm"
+            >
+              🗑️ Delete
+            </button>
           </div>
         </div>
 
+        {/* Right Side */}
         <div className="space-y-8">
+          {/* Stats Cards */}
           <div className="grid grid-cols-3 gap-4">
-            <div className="bg-white rounded-3xl p-6 text-center shadow"><div className="text-4xl font-bold text-emerald-700">{friend.days_since_contact}</div><div className="text-sm text-gray-500 mt-1">Days Since Contact</div></div>
-            <div className="bg-white rounded-3xl p-6 text-center shadow"><div className="text-4xl font-bold text-emerald-700">{friend.goal}</div><div className="text-sm text-gray-500 mt-1">Goal (Days)</div></div>
-            <div className="bg-white rounded-3xl p-6 text-center shadow"><div className="text-4xl font-bold text-emerald-700">May 20</div><div className="text-sm text-gray-500 mt-1">Next Due</div></div>
-          </div>
-
-          <div className="bg-white rounded-3xl p-8 shadow">
-            <div className="flex justify-between items-start">
-              <div><h3 className="font-semibold text-xl">Relationship Goal</h3><p className="text-emerald-700">Connect every <span className="font-bold">{friend.goal} days</span></p></div>
-              <button onClick={() => toast.success('Edit clicked')} className="px-5 py-2 text-sm border border-gray-300 rounded-2xl hover:bg-gray-100">Edit</button>
+            <div className="bg-white rounded-3xl p-6 text-center shadow">
+              <div className="text-4xl font-bold text-emerald-700">{friend.days_since_contact}</div>
+              <div className="text-sm text-gray-500 mt-1">Days Since Contact</div>
+            </div>
+            <div className="bg-white rounded-3xl p-6 text-center shadow">
+              <div className="text-4xl font-bold text-emerald-700">{friend.goal}</div>
+              <div className="text-sm text-gray-500 mt-1">Goal (Days)</div>
+            </div>
+            <div className="bg-white rounded-3xl p-6 text-center shadow">
+              <div className="text-4xl font-bold text-emerald-700">May 20</div>
+              <div className="text-sm text-gray-500 mt-1">Next Due</div>
             </div>
           </div>
 
+          {/* Relationship Goal */}
+          <div className="bg-white rounded-3xl p-8 shadow">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="font-semibold text-xl">Relationship Goal</h3>
+                <p className="text-emerald-700">
+                  Connect every <span className="font-bold">{friend.goal} days</span>
+                </p>
+              </div>
+              <button 
+                onClick={() => toast.success("✅ Relationship goal updated")}
+                className="px-5 py-2 text-sm border border-gray-300 rounded-2xl hover:bg-gray-100 transition-colors"
+              >
+                Edit
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Check-In - Main Requirement */}
           <div className="bg-white rounded-3xl p-8 shadow">
             <h3 className="font-semibold text-xl mb-6">Quick Check-In</h3>
             <div className="grid grid-cols-3 gap-4">
-              <button onClick={() => addToTimeline('call')} className="flex flex-col items-center py-6 hover:bg-gray-50 rounded-2xl">📞<span className="text-sm mt-3 font-medium">Call</span></button>
-              <button onClick={() => addToTimeline('text')} className="flex flex-col items-center py-6 hover:bg-gray-50 rounded-2xl">💬<span className="text-sm mt-3 font-medium">Text</span></button>
-              <button onClick={() => addToTimeline('video')} className="flex flex-col items-center py-6 hover:bg-gray-50 rounded-2xl">📹<span className="text-sm mt-3 font-medium">Video</span></button>
+              <button 
+                onClick={() => addToTimeline('call')} 
+                className="flex flex-col items-center py-8 hover:bg-emerald-50 rounded-2xl transition-all hover:scale-105"
+              >
+                📞
+                <span className="text-sm mt-3 font-medium">Call</span>
+              </button>
+
+              <button 
+                onClick={() => addToTimeline('text')} 
+                className="flex flex-col items-center py-8 hover:bg-emerald-50 rounded-2xl transition-all hover:scale-105"
+              >
+                💬
+                <span className="text-sm mt-3 font-medium">Text</span>
+              </button>
+
+              <button 
+                onClick={() => addToTimeline('video')} 
+                className="flex flex-col items-center py-8 hover:bg-emerald-50 rounded-2xl transition-all hover:scale-105"
+              >
+                📹
+                <span className="text-sm mt-3 font-medium">Video</span>
+              </button>
             </div>
           </div>
         </div>
@@ -184,6 +297,38 @@ const FriendDetail = ({ timeline, setTimeline }) => {
     </div>
   );
 };
+
+// ====================== 404 PAGE (Perfect Version) ======================
+const NotFound = () => {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6 py-12">
+      <div className="max-w-lg text-center">
+        <div className="text-[160px] leading-none mb-6">🤔</div>
+        
+        <h1 className="text-8xl font-bold text-gray-900 mb-3 tracking-tighter">404</h1>
+        <h2 className="text-4xl font-semibold text-gray-700 mb-8">Page Not Found</h2>
+        
+        <p className="text-gray-500 text-xl mb-12">
+          The page you are looking for doesn't exist or has been moved.
+        </p>
+
+        <Link 
+          to="/" 
+          className="inline-flex items-center gap-3 bg-emerald-700 hover:bg-emerald-800 
+                     text-white font-semibold text-lg px-12 py-5 rounded-3xl 
+                     transition-all duration-200 shadow-lg hover:shadow-xl"
+        >
+          ← Back to Home
+        </Link>
+
+        <p className="mt-16 text-sm text-gray-400">
+          KeenKeeper • Keeping your friendships alive
+        </p>
+      </div>
+    </div>
+  );
+};
+
 
 
 const TimelinePage = ({ timeline }) => {
@@ -265,103 +410,91 @@ const Footer = () => (
 );
 
 // ====================== STATS PAGE (Friendship Analytics) ======================
+
+// ====================== STATS / FRIENDSHIP ANALYTICS PAGE ======================
 const StatsPage = ({ timeline }) => {
   // Count interactions
   const callCount = timeline.filter(item => item.type === 'call').length;
   const textCount = timeline.filter(item => item.type === 'text').length;
   const videoCount = timeline.filter(item => item.type === 'video').length;
 
-  // Pie Chart Data
   const pieData = [
-    { name: 'Call', value: callCount, fill: '#10b981' },   // emerald-500
-    { name: 'Text', value: textCount, fill: '#34d399' },   // emerald-400
-    { name: 'Video', value: videoCount, fill: '#059669' }, // emerald-600
-  ].filter(item => item.value > 0); // শুধু যেগুলোর count > 0 দেখাবে
+    { name: 'Calls', value: callCount, fill: '#10b981' },   // emerald-500
+    { name: 'Texts', value: textCount, fill: '#34d399' },   // emerald-400
+    { name: 'Videos', value: videoCount, fill: '#059669' }, // emerald-600
+  ].filter(item => item.value > 0); // 0 count এর slice লুকাবে
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
       {/* Friendship Analytics Heading */}
       <div className="mb-12">
         <h1 className="text-4xl font-bold text-gray-900">Friendship Analytics</h1>
-        <p className="text-gray-500 mt-2">Overview of your interaction patterns</p>
+        <p className="text-gray-500 mt-2 text-lg">Overview of your interactions with friends</p>
       </div>
 
-      {/* Pie Chart Section */}
-      <div className="bg-white rounded-3xl shadow-sm p-10 mb-12">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-8 text-center">
-          Interaction Distribution
-        </h2>
-
-        {timeline.length === 0 ? (
-          <div className="h-96 flex flex-col items-center justify-center text-gray-400">
-            <div className="text-7xl mb-6">📊</div>
-            <h3 className="text-xl font-medium text-gray-700">No interactions yet</h3>
-            <p className="mt-3 text-center max-w-sm">
-              When you log calls, texts, or video chats from friend detail pages, 
-              the distribution will appear here.
-            </p>
-          </div>
-        ) : (
-          <div className="h-96">
+      {/* Pie Chart Card */}
+      <div className="bg-white rounded-3xl shadow-sm p-10">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-8">Interaction Breakdown</h2>
+        
+        <div className="h-96 flex items-center justify-center">
+          {pieData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={pieData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={85}
-                  outerRadius={150}
+                  innerRadius={85}     // Donut style
+                  outerRadius={160}
                   dataKey="value"
-                  label={({ name, percent }) => 
-                    percent > 0.06 ? `${name} ${(percent * 100).toFixed(0)}%` : ''
-                  }
+                  paddingAngle={3}
                 >
                   {pieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
                 </Pie>
-                <Tooltip 
-                  contentStyle={{
-                    backgroundColor: '#fff',
-                    border: 'none',
-                    borderRadius: '12px',
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                    padding: '12px 16px'
-                  }}
-                />
+                <Tooltip />
                 <Legend 
                   verticalAlign="bottom" 
-                  align="center"
+                  align="center" 
                   iconType="circle"
-                  wrapperStyle={{ paddingTop: '40px', fontSize: '15px' }}
+                  wrapperStyle={{ paddingTop: "30px", fontSize: "15px" }}
                 />
               </PieChart>
             </ResponsiveContainer>
-          </div>
-        )}
+          ) : (
+            /* Empty State */
+            <div className="text-center">
+              <div className="text-7xl mb-6">📊</div>
+              <h3 className="text-2xl font-medium text-gray-400">No interactions yet</h3>
+              <p className="text-gray-500 mt-3 max-w-xs mx-auto">
+                Start adding Calls, Texts or Video calls from friend detail page to see analytics here.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-3xl p-8 shadow-sm text-center">
-          <div className="text-6xl font-bold text-emerald-600 mb-2">{callCount}</div>
-          <div className="text-gray-600 font-medium">Total Calls</div>
+      {/* Optional: Summary Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        <div className="bg-white rounded-3xl p-8 text-center shadow-sm">
+          <div className="text-5xl font-bold text-emerald-600">{callCount}</div>
+          <div className="mt-3 text-gray-600 font-medium">Total Calls</div>
         </div>
-        <div className="bg-white rounded-3xl p-8 shadow-sm text-center">
-          <div className="text-6xl font-bold text-emerald-600 mb-2">{textCount}</div>
-          <div className="text-gray-600 font-medium">Total Texts</div>
+        <div className="bg-white rounded-3xl p-8 text-center shadow-sm">
+          <div className="text-5xl font-bold text-emerald-600">{textCount}</div>
+          <div className="mt-3 text-gray-600 font-medium">Total Texts</div>
         </div>
-        <div className="bg-white rounded-3xl p-8 shadow-sm text-center">
-          <div className="text-6xl font-bold text-emerald-600 mb-2">{videoCount}</div>
-          <div className="text-gray-600 font-medium">Total Video Calls</div>
+        <div className="bg-white rounded-3xl p-8 text-center shadow-sm">
+          <div className="text-5xl font-bold text-emerald-600">{videoCount}</div>
+          <div className="mt-3 text-gray-600 font-medium">Total Video Calls</div>
         </div>
       </div>
     </div>
   );
 };
-
-      
-
+              
+   
    
 
 
@@ -390,14 +523,44 @@ function App() {
           <Route path="/timeline" element={<TimelinePage timeline={timeline} />} />
           
           {/* Updated Stats Route */}
-          <Route path="/stats" element={<StatsPage timeline={timeline} />} />
+          <Route path="/stats" element={<StatsPage timeline={timeline} />
+        } 
+       />
           
           <Route path="/friend/:id" element={<FriendDetail timeline={timeline} setTimeline={setTimeline} />} />
+        
+        {/* 404 Page - Footer ছাড়া */}
+        <Route path="*" element={<NotFound />} />
         </Routes>
-        <Footer />
-        <ToastContainer position="top-right" autoClose={2000} />
+
+     {/* Footer শুধুমাত্র 404 ছাড়া অন্য সব পেজে দেখাবে */}
+               {/* ✅ ToastContainer এখানে রাখো - সবার শেষে */}
+        <ToastContainer 
+          position="top-right"
+          autoClose={2500}
+          hideProgressBar={false}
+          newestOnTop={true}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+
+
+
+
+        <Routes>
+          <Route path="*" element={null} />           {/* 404 এ Footer বাদ */}
+          <Route path="/friend/:id" element={<Footer />} />
+          <Route path="/timeline" element={<Footer />} />
+          <Route path="/stats" element={<Footer />} />
+          <Route path="/" element={<Footer />} />
+        </Routes>
       </div>
     </Router>
+        
   );
 }
 
